@@ -1,4 +1,5 @@
 "use strict";
+// src/index.ts (Corrected Structure)
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -26,22 +27,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// src/index.ts
 const express_1 = __importDefault(require("express"));
 const TransactionService = __importStar(require("./TransactionService"));
+const sequelize_1 = require("./config/sequelize"); // <-- Import the connection check
 const app = (0, express_1.default)();
-const port = 3000;
+const port = 3000; // Define port here
 app.use(express_1.default.json());
+// --- 1. CORE API ROUTE (MUST BE UNCOMMENTED) ---
 app.post('/api/transactions', async (req, res) => {
-    const journalId = 1;
+    const journalId = 1; // Assuming a fixed journal ID for now
     const batch = req.body.transactions;
     if (!batch || !Array.isArray(batch))
-        return res.status(400).send({ message: 'Invalid input' });
+        return res.status(400).send({ message: 'Invalid transactions batch.' });
     const results = [];
     for (const entry of batch) {
         try {
+            // Note: This needs updating to use the new Sequelize models inside
             const result = await TransactionService.processSingleEntry(entry, journalId);
-            results.push({ entry, result });
+            results.push({ entry, status: 'SUCCESS', result });
         }
         catch (error) {
             results.push({ entry, status: 'FAILURE', error: error.message });
@@ -49,6 +52,16 @@ app.post('/api/transactions', async (req, res) => {
     }
     res.json({ message: 'Batch Processed', results });
 });
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+// -------------------------------------------------------------------
+// --- 2. STARTUP LOGIC (Must be wrapped and called) ---
+// -------------------------------------------------------------------
+async function startServer() {
+    // 1. AUTHENTICATE DATABASE FIRST
+    await (0, sequelize_1.testConnection)(); // Wait for the Sequelize connection to be verified.
+    // 2. START THE EXPRESS SERVER
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}
+// Execute the startup function
+startServer();
