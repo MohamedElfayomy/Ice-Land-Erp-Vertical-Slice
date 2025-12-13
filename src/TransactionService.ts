@@ -1,10 +1,7 @@
-// src/TransactionService.ts
-//import e from 'express';
-//import { PoolClient } from 'pg';
-
 import sequelize from './config/sequelize';
-import { Account, COAType, Journal, SingleEntry, JournalEntry } from './models/init-models';
+import { Account, SingleEntry, CoaType, JournalEntry, Journals } from './models/init-models';
 import { Transaction } from 'sequelize';
+import { getNormalBalanceCode } from './HelperFunctions';
 
 interface SingleEntryInput {
     secondary_account_id: number;
@@ -15,25 +12,6 @@ interface SingleEntryInput {
 
 // --- Helper Functions ---
 
-async function _getAccountType(accountId: number): Promise<string>{
-    const account = await Account.findByPk(accountId, {
-        include:[{
-            model: COAType, 
-            as: 'Type',
-            attributes: ['normal_balance_code']
-        }]
-    });
-    if (!account) throw new Error(`Account ID ${accountId} not found.`);
-
-    return account.get('normal_balance_code') as string;
-}
-
-async function _getJournalPrimaryAccountId(journalId: number): Promise<number> {
-    const journal = await Journal.findByPk(journalId);
-    if (!journal) throw new Error(`Journal ID ${journalId} not found.`);
-
-    return journal.get('primary_cash_account_id') as number;
-}
 
 async function _createSingleEntry(transaction: any, entry: SingleEntryInput, journalId: number): Promise<InstanceType<typeof SingleEntry>> {
     const singleEntry = await SingleEntry.create({
@@ -42,7 +20,7 @@ async function _createSingleEntry(transaction: any, entry: SingleEntryInput, jou
         value: entry.value,
         direction: entry.direction,
         description: entry.description
-    }, { transaction });
+    }, { transaction });    
 
     return singleEntry;
 }
@@ -99,8 +77,12 @@ export async function processSingleEntry(entry: SingleEntryInput, journalId: num
     // --- 1. PRE-TRANSACTION READS ---
     
     // Get the required data needed for transaction logic (read operations)
-    const primaryAccountId = await _getJournalPrimaryAccountId(journalId);
-    const secondaryAccountNormalBalance = await _getAccountType(entry.secondary_account_id);
+    const primaryAccountId = await Journals.findByPk(journalId).then(journal => {
+        if (!journal) throw new Error(`Journal ID ${journalId} not found.`);
+        return journal.get('primary_cash_account_id') as number;
+    });
+
+    const secondaryAccountNormalBalance = await getNormalBalanceCode(entry.secondary_account_id);
     
     // Initialize the transaction variable
     let t: Transaction;

@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JournalEntry = exports.SingleEntry = exports.Journal = exports.Account = exports.COAType = void 0;
+exports.JournalEntry = exports.SingleEntry = exports.CoaType = exports.Journals = exports.Account = void 0;
 const sequelize_1 = require("sequelize");
 const sequelize_2 = __importDefault(require("../config/sequelize"));
-// --- Define COAType model ---
-exports.COAType = sequelize_2.default.define("coa_types", {
+class CoaType extends sequelize_1.Model {
+}
+exports.CoaType = CoaType;
+CoaType.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -22,10 +24,15 @@ exports.COAType = sequelize_2.default.define("coa_types", {
         allowNull: false,
     },
 }, {
+    sequelize: sequelize_2.default,
+    modelName: 'CoaType',
+    tableName: 'coa_types',
     timestamps: false,
 });
-// --- Define accounts model ---
-exports.Account = sequelize_2.default.define("accounts", {
+class Account extends sequelize_1.Model {
+}
+exports.Account = Account;
+Account.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -44,10 +51,15 @@ exports.Account = sequelize_2.default.define("accounts", {
         allowNull: false,
     },
 }, {
+    sequelize: sequelize_2.default,
+    modelName: 'Account',
+    tableName: 'accounts',
     timestamps: false,
 });
-// --- Define Journal model ---
-exports.Journal = sequelize_2.default.define("journals", {
+class Journals extends sequelize_1.Model {
+}
+exports.Journals = Journals;
+Journals.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -62,10 +74,15 @@ exports.Journal = sequelize_2.default.define("journals", {
         allowNull: false,
     },
 }, {
+    sequelize: sequelize_2.default,
+    modelName: 'Journals',
+    tableName: 'journals',
     timestamps: false,
 });
-// --- Define SingleEntry model ---
-exports.SingleEntry = sequelize_2.default.define("single_entries", {
+class SingleEntry extends sequelize_1.Model {
+}
+exports.SingleEntry = SingleEntry;
+SingleEntry.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -92,10 +109,15 @@ exports.SingleEntry = sequelize_2.default.define("single_entries", {
         allowNull: true,
     },
 }, {
+    sequelize: sequelize_2.default,
+    modelName: 'SingleEntry',
+    tableName: 'single_entries',
     timestamps: false,
 });
-// --- Define JournalEntry model ---
-exports.JournalEntry = sequelize_2.default.define("journal_entries", {
+class JournalEntry extends sequelize_1.Model {
+}
+exports.JournalEntry = JournalEntry;
+JournalEntry.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -122,49 +144,66 @@ exports.JournalEntry = sequelize_2.default.define("journal_entries", {
         allowNull: false,
     },
 }, {
+    sequelize: sequelize_2.default,
+    modelName: 'JournalEntry',
+    tableName: 'journal_entries',
     timestamps: false,
 });
-// --- Define associations ---
+class JournalAccounts extends sequelize_1.Model {
+}
+JournalAccounts.init({
+    journal_id: {
+        type: sequelize_1.DataTypes.INTEGER,
+        primaryKey: true,
+    },
+    account_id: {
+        type: sequelize_1.DataTypes.INTEGER,
+        primaryKey: true,
+    },
+}, {
+    sequelize: sequelize_2.default,
+    modelName: 'JournalAccounts',
+    tableName: 'journal_accounts',
+    timestamps: false,
+});
+// Associations
 // Account table foreign keys/References
-exports.Account.belongsTo(exports.COAType, { foreignKey: 'type_id', as: 'Type' });
-exports.COAType.hasMany(exports.Account, { foreignKey: 'type_id' });
+Account.belongsTo(CoaType, { foreignKey: 'type_id', as: 'Type' });
+CoaType.hasMany(Account, { foreignKey: 'type_id' });
 // SingleEntry table foreign keys/References
-exports.SingleEntry.belongsTo(exports.Journal, { foreignKey: 'journal_id', as: 'Journal' });
-exports.Journal.hasMany(exports.SingleEntry, { foreignKey: 'journal_id' });
-exports.SingleEntry.belongsTo(exports.Account, { foreignKey: 'secondary_account_id', as: 'SecondaryAccount' });
-exports.Account.hasMany(exports.SingleEntry, { foreignKey: 'secondary_account_id' });
+SingleEntry.belongsTo(Journals, { foreignKey: 'journal_id', as: 'Journal' });
+Journals.hasMany(SingleEntry, { foreignKey: 'journal_id' });
+SingleEntry.belongsTo(Account, { foreignKey: 'secondary_account_id', as: 'SecondaryAccount' });
+Account.hasMany(SingleEntry, { foreignKey: 'secondary_account_id' });
 // Journals table foreign keys/References
-exports.Journal.belongsTo(exports.Account, { foreignKey: 'primary_cash_account_id', as: 'PrimaryCashAccount' });
-exports.Account.hasMany(exports.Journal, { foreignKey: 'primary_cash_account_id' });
+Journals.belongsTo(Account, {
+    foreignKey: 'primary_cash_account_id',
+    as: 'PrimaryCashAccount'
+});
+// HasMany: Journals where this account is the main cash account
+Account.hasMany(Journals, {
+    foreignKey: 'primary_cash_account_id',
+    as: 'JournalsAsPrimaryCash' // unique!
+});
 // JournalEntry table foreign keys/References
-exports.JournalEntry.belongsTo(exports.SingleEntry, { foreignKey: 'single_entry_id', as: 'SingleEntry' });
-exports.SingleEntry.hasMany(exports.JournalEntry, { foreignKey: 'single_entry_id' });
-exports.JournalEntry.belongsTo(exports.Journal, { foreignKey: 'journal_id', as: 'Journal' });
-exports.Journal.hasMany(exports.JournalEntry, { foreignKey: 'journal_id' });
-exports.JournalEntry.belongsTo(exports.Account, { foreignKey: 'account_id', as: 'Account' });
-exports.Account.hasMany(exports.JournalEntry, { foreignKey: 'account_id' });
-// Journal accounts Junction table associations for many-to-many relationships
-exports.Account.belongsToMany(exports.Journal, {
-    through: 'journal_accounts',
+JournalEntry.belongsTo(SingleEntry, { foreignKey: 'single_entry_id', as: 'SingleEntry' });
+SingleEntry.hasMany(JournalEntry, { foreignKey: 'single_entry_id' });
+JournalEntry.belongsTo(Journals, { foreignKey: 'journal_id', as: 'Journal' });
+Journals.hasMany(JournalEntry, { foreignKey: 'journal_id' });
+JournalEntry.belongsTo(Account, { foreignKey: 'account_id', as: 'Account' });
+Account.hasMany(JournalEntry, { foreignKey: 'account_id' });
+// Many-to-Many: Accounts that are "attached" to a journal (e.g. for reporting)
+Account.belongsToMany(Journals, {
+    through: JournalAccounts,
     foreignKey: 'account_id',
     otherKey: 'journal_id',
-    as: 'Journals',
+    as: 'AttachedJournals',
     timestamps: false,
 });
-exports.Journal.belongsToMany(exports.Account, {
-    through: 'Journal_accounts',
+Journals.belongsToMany(Account, {
+    through: JournalAccounts,
     foreignKey: 'journal_id',
     otherKey: 'account_id',
-    as: 'Accounts',
+    as: 'AttachedAccounts',
     timestamps: false,
 });
-function initModels() {
-    return {
-        COAType: exports.COAType,
-        Account: exports.Account,
-        Journal: exports.Journal,
-        SingleEntry: exports.SingleEntry,
-        JournalEntry: exports.JournalEntry,
-    };
-}
-exports.default = initModels;

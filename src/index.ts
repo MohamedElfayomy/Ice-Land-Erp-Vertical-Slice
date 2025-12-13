@@ -9,27 +9,6 @@ const port = 3000; // Define port here
 
 app.use(express.json());
 
-// --- 1. CORE API ROUTE (MUST BE UNCOMMENTED) ---
-app.post('/api/transactions', async (req, res) => {
-    const journalId = 1; // Assuming a fixed journal ID for now
-    const batch = req.body.transactions;
-
-    if (!batch || !Array.isArray(batch)) return res.status(400).send({ message: 'Invalid transactions batch.' });
-
-    const results = [];
-    for (const entry of batch) {
-        try {
-            // Note: This needs updating to use the new Sequelize models inside
-            const result = await TransactionService.processSingleEntry(entry, journalId); 
-            results.push({ entry, status: 'SUCCESS', result });
-        } catch (error) {
-            results.push({ entry, status: 'FAILURE', error: (error as Error).message });
-        }
-    }
-    res.json({ message: 'Batch Processed', results });
-});
-
-
 // -------------------------------------------------------------------
 // --- 2. STARTUP LOGIC (Must be wrapped and called) ---
 // -------------------------------------------------------------------

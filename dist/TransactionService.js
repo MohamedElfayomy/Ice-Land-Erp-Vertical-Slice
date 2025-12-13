@@ -1,7 +1,4 @@
 "use strict";
-// src/TransactionService.ts
-//import e from 'express';
-//import { PoolClient } from 'pg';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,25 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.processSingleEntry = void 0;
 const sequelize_1 = __importDefault(require("./config/sequelize"));
 const init_models_1 = require("./models/init-models");
+const HelperFunctions_1 = require("./HelperFunctions");
 // --- Helper Functions ---
-async function _getAccountType(accountId) {
-    const account = await init_models_1.Account.findByPk(accountId, {
-        include: [{
-                model: init_models_1.COAType,
-                as: 'Type',
-                attributes: ['normal_balance_code']
-            }]
-    });
-    if (!account)
-        throw new Error(`Account ID ${accountId} not found.`);
-    return account.get('normal_balance_code');
-}
-async function _getJournalPrimaryAccountId(journalId) {
-    const journal = await init_models_1.Journal.findByPk(journalId);
-    if (!journal)
-        throw new Error(`Journal ID ${journalId} not found.`);
-    return journal.get('primary_cash_account_id');
-}
 async function _createSingleEntry(transaction, entry, journalId) {
     const singleEntry = await init_models_1.SingleEntry.create({
         journal_id: journalId,
@@ -75,8 +55,12 @@ async function _postToGeneralLedger(transaction, entry, primaryAccountId, second
 async function processSingleEntry(entry, journalId) {
     // --- 1. PRE-TRANSACTION READS ---
     // Get the required data needed for transaction logic (read operations)
-    const primaryAccountId = await _getJournalPrimaryAccountId(journalId);
-    const secondaryAccountNormalBalance = await _getAccountType(entry.secondary_account_id);
+    const primaryAccountId = await init_models_1.Journals.findByPk(journalId).then(journal => {
+        if (!journal)
+            throw new Error(`Journal ID ${journalId} not found.`);
+        return journal.get('primary_cash_account_id');
+    });
+    const secondaryAccountNormalBalance = await (0, HelperFunctions_1.getNormalBalanceCode)(entry.secondary_account_id);
     // Initialize the transaction variable
     let t;
     try {
