@@ -1,25 +1,23 @@
-import express from 'express';
-import { processSingleEntry } from '../TransactionService';
+import express from "express";
+import { processSingleEntry } from "../TransactionService";
 
 const router = express.Router();
-router.post('/transaction', async (req, res) => {
+
+router.post('/transactions', async (req, res) => {
     try {
-        console.log('Received transaction request:', req.body);
-        const {entry, journalId} = req.body;
+        const { entry, journal_id} = req.body;
 
-        if (!journalId) {
-            throw new Error('Journal ID undefined not found.');
+        if (!entry || !journal_id) {
+            return res.status(400).json({ message: 'Missing entry or journal_id in request body.' });
         }
-        const result = await processSingleEntry(entry, journalId);
-        res.status(201).json({ 
-            message: 'Transaction successfully processed and committed.', 
-            data: result 
-        });
-
-    } catch (error: any) {
-        console.error('Transaction failed:', error.message);
-        res.status(500).json({ error: 'Transaction failed. Ledger rolled back.', details: error.message });
+        const result = await processSingleEntry(entry, journal_id);
+    
+        res.status(200).json({ message: 'Transaction processed successfully.', result });
+    
+    } catch (error) {
+        console.error('Error processing transaction:', error);
+        res.status(500).json({ message: 'Internal server error.', error: (error as Error).message });
     }
 });
-    
+
 export default router;

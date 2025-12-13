@@ -3,11 +3,15 @@
 import express from 'express';
 import * as TransactionService from './TransactionService'; 
 import { testConnection } from './config/sequelize'; // <-- Import the connection check
+import transactionRoutes from './routes/TransactionRoutes';
 
 const app = express();
 const port = 3000; // Define port here
 
 app.use(express.json());
+
+app.use('/api/transactions', transactionRoutes)
+
 
 // -------------------------------------------------------------------
 // --- 2. STARTUP LOGIC (Must be wrapped and called) ---
