@@ -4,18 +4,10 @@ import express from 'express';
 import * as TransactionService from './TransactionService'; 
 import { testConnection } from './config/sequelize'; // <-- Import the connection check
 import transactionRoutes from './routes/TransactionRoutes';
+import app from './routes/app';
 
-const app = express();
-const port = 3000; // Define port here
+const port = process.env.PORT || 3000; // Default port if not specified
 
-app.use(express.json());
-
-app.use('/api/transactions', transactionRoutes)
-
-
-// -------------------------------------------------------------------
-// --- 2. STARTUP LOGIC (Must be wrapped and called) ---
-// -------------------------------------------------------------------
 
 async function startServer() {
     // 1. AUTHENTICATE DATABASE FIRST

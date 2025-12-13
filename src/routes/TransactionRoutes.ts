@@ -2,7 +2,6 @@ import express from "express";
 import { processSingleEntry } from "../TransactionService";
 
 const router = express.Router();
-
 router.post('/transactions', async (req, res) => {
     try {
         const { entry, journal_id} = req.body;

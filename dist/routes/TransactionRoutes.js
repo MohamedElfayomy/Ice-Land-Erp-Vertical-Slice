@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const TransactionService_1 = require("../TransactionService");
 const router = express_1.default.Router();
+const journal_id = 1; // Example journal_id, replace with actual logic if needed
 router.post('/transactions', async (req, res) => {
     try {
         const { entry, journal_id } = req.body;
