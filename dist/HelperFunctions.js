@@ -16,6 +16,7 @@ async function getNormalBalanceCode(accountId) {
     if (!account || !account.Type) {
         throw new Error(`Account ID ${accountId} or its type not found.`);
     }
+    console.log(`Normal balance code for account ID ${accountId} is ${account.Type.normal_balance_code}`);
     return account.Type.normal_balance_code;
 }
 exports.getNormalBalanceCode = getNormalBalanceCode;
