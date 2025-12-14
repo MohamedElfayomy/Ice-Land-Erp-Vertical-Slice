@@ -32,7 +32,8 @@ async function _postToGeneralLedger(
     secondary_account_id: number,
     secondaryAccountNormalBalance: string,
     singleEntryId: number, 
-    journalId: number
+    journalId: number,
+    description?: string
 ) {    
 
     let debitAccount: number = 0;; 
@@ -54,6 +55,7 @@ if (entry.direction === 'IN') {
         single_entry_id: singleEntryId,
         journal_id: journalId,
         account_id: primaryAccountId,
+        description: entry.description,
         debit: creditAccount,
         credit: debitAccount,
     }, { transaction });
@@ -62,6 +64,7 @@ if (entry.direction === 'IN') {
         single_entry_id: singleEntryId,
         journal_id: journalId,
         account_id: secondary_account_id,
+        description: entry.description,
         debit: debitAccount,
         credit: creditAccount
     }, {transaction} );
@@ -104,7 +107,8 @@ export async function processSingleEntry(entry: SingleEntryInput, journalId: num
             entry.secondary_account_id,
             secondaryAccountNormalBalance,
             singleEntryId,
-            journalId
+            journalId,
+            entry.description
         );
 
         // COMMIT: If all database operations were successful, commit the changes.

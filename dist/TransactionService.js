@@ -18,7 +18,7 @@ async function _createSingleEntry(transaction, entry, journalId) {
     }, { transaction });
     return singleEntry;
 }
-async function _postToGeneralLedger(transaction, entry, primaryAccountId, secondary_account_id, secondaryAccountNormalBalance, singleEntryId, journalId) {
+async function _postToGeneralLedger(transaction, entry, primaryAccountId, secondary_account_id, secondaryAccountNormalBalance, singleEntryId, journalId, description) {
     let debitAccount = 0;
     ;
     let creditAccount = 0;
@@ -39,6 +39,7 @@ async function _postToGeneralLedger(transaction, entry, primaryAccountId, second
         single_entry_id: singleEntryId,
         journal_id: journalId,
         account_id: primaryAccountId,
+        description: entry.description,
         debit: creditAccount,
         credit: debitAccount,
     }, { transaction });
@@ -46,6 +47,7 @@ async function _postToGeneralLedger(transaction, entry, primaryAccountId, second
         single_entry_id: singleEntryId,
         journal_id: journalId,
         account_id: secondary_account_id,
+        description: entry.description,
         debit: debitAccount,
         credit: creditAccount
     }, { transaction });
@@ -70,7 +72,7 @@ async function processSingleEntry(entry, journalId) {
         const singleEntryRecord = await _createSingleEntry(t, entry, journalId);
         const singleEntryId = singleEntryRecord.get('id');
         // Post the Debit/Credit Journal Entries (The Double Entry)
-        const ledgerResult = await _postToGeneralLedger(t, entry, primaryAccountId, entry.secondary_account_id, secondaryAccountNormalBalance, singleEntryId, journalId);
+        const ledgerResult = await _postToGeneralLedger(t, entry, primaryAccountId, entry.secondary_account_id, secondaryAccountNormalBalance, singleEntryId, journalId, entry.description);
         // COMMIT: If all database operations were successful, commit the changes.
         await t.commit();
         return {

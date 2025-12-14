@@ -135,6 +135,10 @@ JournalEntry.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    description: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
     debit: {
         type: sequelize_1.DataTypes.DECIMAL(10, 2),
         allowNull: false,

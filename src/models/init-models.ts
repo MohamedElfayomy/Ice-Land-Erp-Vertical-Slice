@@ -144,6 +144,7 @@ class JournalEntry extends Model<InferAttributes<JournalEntry>, InferCreationAtt
   declare single_entry_id: number;
   declare journal_id: number;
   declare account_id: number;
+  declare description?: string;
   declare debit: number;
   declare credit: number;
 }
@@ -165,6 +166,10 @@ JournalEntry.init({
   account_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   debit: {
     type: DataTypes.DECIMAL(10,2),
