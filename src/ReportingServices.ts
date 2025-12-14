@@ -1,9 +1,5 @@
-import sequelize from "./config/sequelize";
 import { Account, SingleEntry, CoaType, JournalEntry, Journals } from "./models/init-models";
-import { Transaction } from "sequelize";
 import { _getJournalPrimaryAccountId, getNormalBalanceCode } from "./HelperFunctions";
-import { Op } from 'sequelize';
-
 
 interface LedgerInput {
     secondary_account_id: number;
@@ -68,4 +64,19 @@ export async function LedgerReport(entry: LedgerInput): Promise<{
         entries: transactions,
         ending_balance: runningBalance,
     };
+}
+
+interface MasterLedgerInput {
+    account_id: number;
+    journal_id: number;
+}
+
+interface MasterLedgerReportRow {
+    account_name: string;
+    account_number: string;
+    debit_total: number;
+    credit_total: number;
+    ending_balance: number;
+
+
 }

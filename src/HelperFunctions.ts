@@ -1,4 +1,7 @@
+import { get } from 'http';
 import { Account, CoaType, Journals, SingleEntry, JournalEntry } from './models/init-models';
+import { NUMBER, where } from 'sequelize';
+import sequelize from './config/sequelize';
 
 export async function getNormalBalanceCode(accountId: number): Promise<string> {
   const account = await Account.findByPk(accountId, {
@@ -20,9 +23,37 @@ export async function getNormalBalanceCode(accountId: number): Promise<string> {
 }
 
 
-export async function _getJournalPrimaryAccountId(journalId: number): Promise<number> {
+export async function _getJournalPrimaryAccountId(journalId: number, code: string): Promise<number> {
     const journal = await Journals.findByPk(journalId);
     if (!journal) throw new Error(`Journal ID ${journalId} not found.`);
 
     return journal.get('primary_cash_account_id') as number;
+}
+
+export async function calculateBalance(accountId: number, code: 'debit' | 'credit'): Promise<number> {
+
+  let balance = 0;
+
+    balance = await JournalEntry.sum(code, {
+      where: {
+        id: accountId,
+      },
+    });
+
+return balance;
+}
+
+export async function calculateEndBalance(accountId: number): Promise<number>{
+  let endBalance = 0;
+  const normalBalanceCode = await getNormalBalanceCode(accountId);
+
+  if (normalBalanceCode === 'DEBIT')
+  {
+    endBalance = await calculateBalance(accountId, 'debit') - await calculateBalance(accountId, 'credit');
+  }
+  else{
+    endBalance = await calculateBalance(accountId, 'credit') - await calculateBalance(accountId, 'debit')
+  }
+
+  return endBalance;
 }
