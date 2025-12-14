@@ -30,30 +30,37 @@ export async function _getJournalPrimaryAccountId(journalId: number, code: strin
     return journal.get('primary_cash_account_id') as number;
 }
 
-export async function calculateBalance(accountId: number, code: 'debit' | 'credit'): Promise<number> {
+interface AccountTotals{
+  totalDebit: number;
+  totalCredit: number;
+}
 
-  let balance = 0;
+export async function GetBalanceSum(accountId: number): Promise<AccountTotals> {
 
-    balance = await JournalEntry.sum(code, {
-      where: {
-        id: accountId,
-      },
-    });
+   const result = await JournalEntry.findOne({
+    attributes: [
+      [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('debit')), 0), 'totalDebit'],
+      [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('credit')), 0), 'totalCredit'],
+    ],
+    where: { account_id: accountId },
+    raw: true,
+  });
 
-return balance;
+  const totals = result as AccountTotals | null;
+
+  return {
+    totalDebit: Number(totals?.totalDebit ?? 0),
+    totalCredit: Number(totals?.totalCredit ?? 0)
+  };
 }
 
 export async function calculateEndBalance(accountId: number): Promise<number>{
-  let endBalance = 0;
+
   const normalBalanceCode = await getNormalBalanceCode(accountId);
+  const totals = await GetBalanceSum(accountId);
 
-  if (normalBalanceCode === 'DEBIT')
-  {
-    endBalance = await calculateBalance(accountId, 'debit') - await calculateBalance(accountId, 'credit');
-  }
-  else{
-    endBalance = await calculateBalance(accountId, 'credit') - await calculateBalance(accountId, 'debit')
-  }
+  const totalCredit = totals.totalCredit;
+  const totalDebit = totals.totalDebit;
 
-  return endBalance;
+  return normalBalanceCode === 'DEBIT' ? totalDebit - totalCredit : totalCredit - totalDebit;
 }

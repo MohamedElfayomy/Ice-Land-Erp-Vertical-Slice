@@ -77,6 +77,15 @@ interface MasterLedgerReportRow {
     debit_total: number;
     credit_total: number;
     ending_balance: number;
+}
 
-
+export async function ViewMasterLedger(account_id: number, journal_id: number, masterLedgerInput:MasterLedgerInput): Promise<{
+    accountNumber: number,
+    accountType: string,
+    accountName: string,
+    debit: Number,
+    credit: Number,
+    balance: Number
+}>{
+    
 }
