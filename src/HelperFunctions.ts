@@ -39,8 +39,8 @@ export async function GetBalanceSum(accountId: number): Promise<AccountTotals> {
 
    const result = await JournalEntry.findOne({
     attributes: [
-      [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('debit')), 0), 'totalDebit'],
-      [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('credit')), 0), 'totalCredit'],
+      [(sequelize.fn('SUM', sequelize.col('debit'))), 'totalDebit'],
+      [(sequelize.fn('SUM', sequelize.col('credit'))), 'totalCredit'],
     ],
     where: { account_id: accountId },
     raw: true,
@@ -82,4 +82,31 @@ export async function calculateEndBalance(accountId: number): Promise<BalancesTa
     totalCredit: Number(totalCredit),
     endingBalance: Number(endBalance)
   }
+}
+
+export async function GetAccountsForReport(typeid: number): Promise< {
+  account_number:number;
+  account_name: string;
+  account_balance: number; 
+}[]> {
+
+   const accounts =  await Account.findAll({
+        where: {type_id: typeid,},
+        attributes: ['id', 'account_number', 'name'],
+        order: [['account_number', 'ASC']],
+    });
+
+    const rows = await Promise.all(
+        accounts.map(async(account) => {
+            const balances = await calculateEndBalance(account.id);
+
+            return {
+                account_number: account.account_number,
+                account_name: account.name,
+                account_balance: balances.endingBalance,
+            };
+        })
+    );
+
+    return rows;
 }

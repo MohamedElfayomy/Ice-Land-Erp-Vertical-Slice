@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMasterLedger = exports.LedgerReport = void 0;
+exports.ViewPLStatement = exports.getMasterLedger = exports.LedgerReport = void 0;
 const init_models_1 = require("./models/init-models");
 const HelperFunctions_1 = require("./HelperFunctions");
 async function LedgerReport(entry) {
@@ -65,3 +65,18 @@ async function getMasterLedger() {
     return ledgerRows.sort((a, b) => a.account_number - b.account_number);
 }
 exports.getMasterLedger = getMasterLedger;
+async function ViewPLStatement() {
+    const incomeAccounts = await (0, HelperFunctions_1.GetAccountsForReport)(6);
+    const expenseAccounts = await (0, HelperFunctions_1.GetAccountsForReport)(4);
+    const totalIncome = incomeAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
+    const totalExpense = expenseAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
+    const netProfit = totalIncome - totalExpense;
+    return {
+        income_accounts: incomeAccounts,
+        expense_accounts: expenseAccounts,
+        total_income: totalIncome,
+        total_expense: totalExpense,
+        net_profit: netProfit
+    };
+}
+exports.ViewPLStatement = ViewPLStatement;

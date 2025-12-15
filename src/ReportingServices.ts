@@ -1,5 +1,5 @@
 import { Account, SingleEntry, CoaType, JournalEntry, Journals } from "./models/init-models";
-import { _getJournalPrimaryAccountId, getNormalBalanceCode, GetBalanceSum, calculateEndBalance } from "./HelperFunctions";
+import { _getJournalPrimaryAccountId, getNormalBalanceCode, GetBalanceSum, calculateEndBalance, GetAccountsForReport } from "./HelperFunctions";
 import { getAccountBalance } from "./LedgerService";
 
 interface LedgerInput {
@@ -104,3 +104,37 @@ export async function getMasterLedger(): Promise<MasterLedgerRow[]> {
   return ledgerRows.sort((a, b) => a.account_number - b.account_number);
 
 }
+
+interface PLAccountRow{
+    account_number: number;
+    account_name: string;
+    account_balance: number;
+}
+
+interface PlStatement{
+    income_accounts: PLAccountRow[];
+    expense_accounts: PLAccountRow[];
+    total_income: number;
+    total_expense: number;
+    net_profit: number;
+}
+
+export async function ViewPLStatement(): Promise<PlStatement>{
+
+    const incomeAccounts = await GetAccountsForReport(6);
+    const expenseAccounts = await GetAccountsForReport(4);
+
+    const totalIncome = incomeAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
+    const totalExpense = expenseAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
+    const netProfit = totalIncome - totalExpense;
+
+
+    return{
+        income_accounts: incomeAccounts,
+        expense_accounts: expenseAccounts,
+        total_income: totalIncome,
+        total_expense: totalExpense,
+        net_profit: netProfit
+    }
+}
+

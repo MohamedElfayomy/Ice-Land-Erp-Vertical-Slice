@@ -34,8 +34,8 @@ exports._getJournalPrimaryAccountId = _getJournalPrimaryAccountId;
 async function GetBalanceSum(accountId) {
     const result = await init_models_1.JournalEntry.findOne({
         attributes: [
-            [sequelize_1.default.fn('COALESCE', sequelize_1.default.fn('SUM', sequelize_1.default.col('debit')), 0), 'totalDebit'],
-            [sequelize_1.default.fn('COALESCE', sequelize_1.default.fn('SUM', sequelize_1.default.col('credit')), 0), 'totalCredit'],
+            [(sequelize_1.default.fn('SUM', sequelize_1.default.col('debit'))), 'totalDebit'],
+            [(sequelize_1.default.fn('SUM', sequelize_1.default.col('credit'))), 'totalCredit'],
         ],
         where: { account_id: accountId },
         raw: true,

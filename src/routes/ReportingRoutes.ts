@@ -1,5 +1,5 @@
 import express from 'express';
-import { LedgerReport, getMasterLedger } from '../ReportingServices';
+import { LedgerReport, ViewPLStatement, getMasterLedger } from '../ReportingServices';
 import { report } from 'process';
 
 const router = express.Router();
@@ -36,6 +36,16 @@ router.get('/master-ledger', async (req, res) => {
         res.status(500).json({error: 'failed to generate master ledger!', details: error.message})
     }
 
+});
+
+router.get('/PL', async (req, res) => {
+    try{
+        const Pl = await ViewPLStatement();
+        console.log(Pl);
+        res.status(200).json(Pl);
+    } catch (error: any){
+        res.status(500).json({error: 'failed to generate P & L Statement', details: error.message})
+    }
 });
 
 export default router;
