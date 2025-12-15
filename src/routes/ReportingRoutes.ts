@@ -1,5 +1,6 @@
 import express from 'express';
-import { LedgerReport } from '../ReportingServices';
+import { LedgerReport, getMasterLedger } from '../ReportingServices';
+import { report } from 'process';
 
 const router = express.Router();
 router.get('/ledger-report', async (req, res) => {
@@ -23,6 +24,18 @@ router.get('/ledger-report', async (req, res) => {
         console.error('Error generating ledger report:', error);
         res.status(500).json({ message: 'Internal server error.', error: (error as Error).message });
     }
+});
+
+router.get('/master-ledger', async (req, res) => {
+    try{
+        const masterLedger = await getMasterLedger();
+        console.log(masterLedger);
+
+        res.status(200).json(masterLedger);
+    } catch (error: any){
+        res.status(500).json({error: 'failed to generate master ledger!', details: error.message})
+    }
+
 });
 
 export default router;

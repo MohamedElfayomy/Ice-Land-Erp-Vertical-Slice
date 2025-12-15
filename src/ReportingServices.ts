@@ -1,5 +1,6 @@
 import { Account, SingleEntry, CoaType, JournalEntry, Journals } from "./models/init-models";
-import { _getJournalPrimaryAccountId, getNormalBalanceCode } from "./HelperFunctions";
+import { _getJournalPrimaryAccountId, getNormalBalanceCode, GetBalanceSum, calculateEndBalance } from "./HelperFunctions";
+import { getAccountBalance } from "./LedgerService";
 
 interface LedgerInput {
     secondary_account_id: number;
@@ -43,7 +44,8 @@ export async function LedgerReport(entry: LedgerInput): Promise<{
         const debit = entry.debit;
         const credit = entry.credit;
 
-        if (balanceCode === 'DEBIT') {
+
+        if (balanceCode === 'Debit') {
             runningBalance += debit - credit;
         } else {
             runningBalance += credit - debit;
@@ -66,26 +68,39 @@ export async function LedgerReport(entry: LedgerInput): Promise<{
     };
 }
 
-interface MasterLedgerInput {
-    account_id: number;
-    journal_id: number;
+interface MasterLedgerRow {
+  account_name: string;
+  account_number: number;
+  total_debit: number;
+  total_credit: number;
+  ending_balance: number;
 }
 
-interface MasterLedgerReportRow {
-    account_name: string;
-    account_number: string;
-    debit_total: number;
-    credit_total: number;
-    ending_balance: number;
-}
+export async function getMasterLedger(): Promise<MasterLedgerRow[]> {
+  // 1. Get all accounts from database
+  const accounts = await Account.findAll();
 
-export async function ViewMasterLedger(account_id: number, journal_id: number, masterLedgerInput:MasterLedgerInput): Promise<{
-    accountNumber: number,
-    accountType: string,
-    accountName: string,
-    debit: Number,
-    credit: Number,
-    balance: Number
-}>{
-    
+  // 2. For each account, get totals and calculate balance
+  const ledgerRows = await Promise.all(
+    accounts.map(async (account) => {
+
+
+      // Use your helper to get final balance
+      const { totalDebit, totalCredit, endingBalance} = await calculateEndBalance(account.id);
+
+      return {
+        account_number: account.account_number,
+        account_name: account.name,
+        total_debit: totalDebit,
+        total_credit: totalCredit,
+        ending_balance: endingBalance,
+      };
+    })
+  );
+
+    console.log('master ledger get completed!');
+
+  // 3. Optional: sort by account number (standard in accounting)
+  return ledgerRows.sort((a, b) => a.account_number - b.account_number);
+
 }

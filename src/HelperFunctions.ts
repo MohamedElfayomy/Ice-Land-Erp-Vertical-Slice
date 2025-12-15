@@ -54,7 +54,13 @@ export async function GetBalanceSum(accountId: number): Promise<AccountTotals> {
   };
 }
 
-export async function calculateEndBalance(accountId: number): Promise<number>{
+interface BalancesTable{
+  totalDebit: number;
+  totalCredit: number;
+  endingBalance: number;
+}
+
+export async function calculateEndBalance(accountId: number): Promise<BalancesTable>{
 
   const normalBalanceCode = await getNormalBalanceCode(accountId);
   const totals = await GetBalanceSum(accountId);
@@ -62,5 +68,18 @@ export async function calculateEndBalance(accountId: number): Promise<number>{
   const totalCredit = totals.totalCredit;
   const totalDebit = totals.totalDebit;
 
-  return normalBalanceCode === 'DEBIT' ? totalDebit - totalCredit : totalCredit - totalDebit;
+  let endBalance = 0;
+
+  if (normalBalanceCode === 'Debit'){
+      endBalance = totalDebit - totalCredit;
+  }
+  else{
+    endBalance = totalCredit - totalDebit;
+  }
+
+  return{
+    totalDebit: Number(totalDebit),
+    totalCredit: Number(totalCredit),
+    endingBalance: Number(endBalance)
+  }
 }
