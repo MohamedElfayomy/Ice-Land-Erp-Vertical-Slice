@@ -105,24 +105,25 @@ export async function getMasterLedger(): Promise<MasterLedgerRow[]> {
 
 }
 
-interface PLAccountRow{
+interface AccountRow{
     account_number: number;
     account_name: string;
     account_balance: number;
 }
 
-interface PlStatement{
-    income_accounts: PLAccountRow[];
-    expense_accounts: PLAccountRow[];
-    total_income: number;
-    total_expense: number;
-    net_profit: number;
+interface Report{
+    first_accounts: AccountRow[];
+    second_accounts: AccountRow[];
+    first_total: number;
+    second_total: number;
+    net: number;
 }
 
-export async function ViewPLStatement(): Promise<PlStatement>{
 
-    const incomeAccounts = await GetAccountsForReport(6);
-    const expenseAccounts = await GetAccountsForReport(4);
+export async function ViewPLStatement(): Promise<Report>{
+
+    const incomeAccounts = await GetAccountsForReport(4);
+    const expenseAccounts = await GetAccountsForReport(3);
 
     const totalIncome = incomeAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
     const totalExpense = expenseAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
@@ -130,11 +131,29 @@ export async function ViewPLStatement(): Promise<PlStatement>{
 
 
     return{
-        income_accounts: incomeAccounts,
-        expense_accounts: expenseAccounts,
-        total_income: totalIncome,
-        total_expense: totalExpense,
-        net_profit: netProfit
+        first_accounts: incomeAccounts,
+        second_accounts: expenseAccounts,
+        first_total: totalIncome,
+        second_total: totalExpense,
+        net: netProfit
     }
+}
+
+export async function ViewBalanceSheet(): Promise<Report>{
+
+    const assetsAccounts = await GetAccountsForReport(1);
+    const liabilityAccounts = await GetAccountsForReport(2);
+
+    const totalAssets = assetsAccounts.reduce((sum, acc) => sum + acc.account_balance, 0)
+    const totalLiabilities = assetsAccounts.reduce((sum, acc) => sum + acc.account_balance, 0)
+    const totalBalance = totalAssets - totalLiabilities;
+
+    return{
+        first_accounts: assetsAccounts,
+        second_accounts: liabilityAccounts,
+        first_total: totalAssets,
+        second_total: totalLiabilities,
+        net: totalBalance
+}
 }
 
