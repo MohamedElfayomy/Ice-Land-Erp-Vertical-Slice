@@ -1,5 +1,5 @@
 import express from 'express';
-import { LedgerReport, ViewPLStatement, getMasterLedger } from '../ReportingServices';
+import { LedgerReport, ViewPLStatement, getMasterLedger, ViewBalanceSheet} from '../ReportingServices';
 import { report } from 'process';
 
 const router = express.Router();
@@ -38,9 +38,19 @@ router.get('/master-ledger', async (req, res) => {
 
 });
 
-router.get('/PL', async (req, res) => {
+router.get('/profit-loss', async (req, res) => {
     try{
         const Pl = await ViewPLStatement();
+        console.log(Pl);
+        res.status(200).json(Pl);
+    } catch (error: any){
+        res.status(500).json({error: 'failed to generate P & L Statement', details: error.message})
+    }
+});
+
+router.get('/balance-sheet', async (req, res) => {
+    try{
+        const Pl = await ViewBalanceSheet();
         console.log(Pl);
         res.status(200).json(Pl);
     } catch (error: any){

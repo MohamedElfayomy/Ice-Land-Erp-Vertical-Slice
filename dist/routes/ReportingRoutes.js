@@ -34,9 +34,19 @@ router.get('/master-ledger', async (req, res) => {
         res.status(500).json({ error: 'failed to generate master ledger!', details: error.message });
     }
 });
-router.get('/PL', async (req, res) => {
+router.get('/profit-loss', async (req, res) => {
     try {
         const Pl = await (0, ReportingServices_1.ViewPLStatement)();
+        console.log(Pl);
+        res.status(200).json(Pl);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'failed to generate P & L Statement', details: error.message });
+    }
+});
+router.get('/balance-sheet', async (req, res) => {
+    try {
+        const Pl = await (0, ReportingServices_1.ViewBalanceSheet)();
         console.log(Pl);
         res.status(200).json(Pl);
     }

@@ -1,6 +1,5 @@
-import { Account, SingleEntry, CoaType, JournalEntry, Journals } from "./models/init-models";
-import { _getJournalPrimaryAccountId, getNormalBalanceCode, GetBalanceSum, calculateEndBalance, GetAccountsForReport } from "./HelperFunctions";
-import { getAccountBalance } from "./LedgerService";
+import { Account, SingleEntry, JournalEntry } from "./models/init-models";
+import { _getJournalPrimaryAccountId, getNormalBalanceCode, calculateEndBalance, GetAccountsForReport } from "./HelperFunctions";
 
 interface LedgerInput {
     secondary_account_id: number;
@@ -111,49 +110,57 @@ interface AccountRow{
     account_balance: number;
 }
 
-interface Report{
-    first_accounts: AccountRow[];
-    second_accounts: AccountRow[];
-    first_total: number;
-    second_total: number;
-    net: number;
+interface ProfitLossReport{
+    income_accounts: AccountRow[];
+    expenses_accounts: AccountRow[];
+    incomes_total: number;
+    expenses_total: number;
+    net_profit: number;
+}
+
+interface BalanceSheetReport{
+    assets_accounts: AccountRow[];
+    liabilities_accounts: AccountRow[];
+    assets_total: number;
+    liabilities_total: number;
+    equity: number;
 }
 
 
-export async function ViewPLStatement(): Promise<Report>{
+export async function ViewPLStatement(): Promise<ProfitLossReport>{
 
     const incomeAccounts = await GetAccountsForReport(4);
     const expenseAccounts = await GetAccountsForReport(3);
 
-    const totalIncome = incomeAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
-    const totalExpense = expenseAccounts.reduce((sum, acc) => sum + acc.account_balance, 0);
+    const totalIncome = incomeAccounts.reduce((sum: number, acc: { account_balance: number}) => sum + acc.account_balance, 0);
+    const totalExpense = expenseAccounts.reduce((sum: number, acc: { account_balance: number}) => sum + acc.account_balance, 0);
     const netProfit = totalIncome - totalExpense;
 
 
     return{
-        first_accounts: incomeAccounts,
-        second_accounts: expenseAccounts,
-        first_total: totalIncome,
-        second_total: totalExpense,
-        net: netProfit
+        income_accounts: incomeAccounts,
+        expenses_accounts: expenseAccounts,
+        incomes_total: totalIncome,
+        expenses_total: totalExpense,
+        net_profit: netProfit
     }
 }
 
-export async function ViewBalanceSheet(): Promise<Report>{
+export async function ViewBalanceSheet(): Promise<BalanceSheetReport>{
 
     const assetsAccounts = await GetAccountsForReport(1);
     const liabilityAccounts = await GetAccountsForReport(2);
 
-    const totalAssets = assetsAccounts.reduce((sum, acc) => sum + acc.account_balance, 0)
-    const totalLiabilities = assetsAccounts.reduce((sum, acc) => sum + acc.account_balance, 0)
-    const totalBalance = totalAssets - totalLiabilities;
+    const totalAssets = assetsAccounts.reduce((sum: number, acc: { account_balance: number}) => sum + acc.account_balance, 0);
+    const totalLiabilities = liabilityAccounts.reduce((sum: number, acc: { account_balance: number}) => sum + acc.account_balance, 0);
+    const equity = totalAssets - totalLiabilities;
 
     return{
-        first_accounts: assetsAccounts,
-        second_accounts: liabilityAccounts,
-        first_total: totalAssets,
-        second_total: totalLiabilities,
-        net: totalBalance
-}
+        assets_accounts: assetsAccounts,
+        liabilities_accounts: liabilityAccounts,
+        assets_total: totalAssets,
+        liabilities_total: totalLiabilities,
+        equity: equity
+    }
 }
 

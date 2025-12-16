@@ -1,6 +1,4 @@
-import { get } from 'http';
-import { Account, CoaType, Journals, SingleEntry, JournalEntry } from './models/init-models';
-import { NUMBER, where } from 'sequelize';
+import { Account, CoaType, Journals, JournalEntry } from './models/init-models';
 import sequelize from './config/sequelize';
 
 export async function getNormalBalanceCode(accountId: number): Promise<string> {

@@ -1,7 +1,7 @@
 import sequelize from './config/sequelize';
-import { Account, SingleEntry, CoaType, JournalEntry, Journals } from './models/init-models';
+import {SingleEntry, JournalEntry, Journals } from './models/init-models';
 import { Transaction } from 'sequelize';
-import { getNormalBalanceCode } from './HelperFunctions';
+import { getNormalBalanceCode, calculateEndBalance, GetAccountsForReport} from './HelperFunctions';
 
 interface SingleEntryInput {
     secondary_account_id: number;
@@ -71,7 +71,6 @@ if (entry.direction === 'IN') {
 
     return {primaryAccountId, secondary_account_id};
 }
-
 
 // --- Main Function ---
 
