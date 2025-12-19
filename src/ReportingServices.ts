@@ -88,7 +88,7 @@ export async function getMasterLedger(): Promise<MasterLedgerRow[]> {
       const { totalDebit, totalCredit, endingBalance} = await calculateEndBalance(account.id);
 
       return {
-        account_number: account.account_number,
+        account_number: account.number,
         account_name: account.name,
         total_debit: totalDebit,
         total_credit: totalCredit,

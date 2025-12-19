@@ -1,4 +1,4 @@
-import { Account, CoaType, Journals, JournalEntry } from './models/init-models';
+import {Account, CoaType, JournalEntry, Journals} from './models/init-models';
 import sequelize from './config/sequelize';
 
 export async function getNormalBalanceCode(accountId: number): Promise<string> {
@@ -99,7 +99,7 @@ export async function GetAccountsForReport(typeid: number): Promise< {
             const balances = await calculateEndBalance(account.id);
 
             return {
-                account_number: account.account_number,
+                account_number: account.number,
                 account_name: account.name,
                 account_balance: balances.endingBalance,
             };
@@ -107,4 +107,15 @@ export async function GetAccountsForReport(typeid: number): Promise< {
     );
 
     return rows;
+}
+
+export async function findIdFromName(name: string, model: any): Promise<number> {
+    const idName:number = await model.findOne({
+        where: {name},
+        attributes: ['id'],
+    });
+
+    if (!idName) {throw new Error('Name was not found!');}
+
+    return idName;
 }

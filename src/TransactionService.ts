@@ -10,19 +10,14 @@ interface SingleEntryInput {
     description: string;
 }
 
-// --- Helper Functions ---
-
-
 async function _createSingleEntry(transaction: any, entry: SingleEntryInput, journalId: number): Promise<InstanceType<typeof SingleEntry>> {
-    const singleEntry = await SingleEntry.create({
+    return await SingleEntry.create({
         journal_id: journalId,
         secondary_account_id: entry.secondary_account_id,
         value: entry.value,
         direction: entry.direction,
         description: entry.description
-    }, { transaction });    
-
-    return singleEntry;
+    }, { transaction });
 }
 
 async function _postToGeneralLedger(
@@ -36,7 +31,7 @@ async function _postToGeneralLedger(
     description?: string
 ) {    
 
-    let debitAccount: number = 0;; 
+    let debitAccount: number = 0;
     let creditAccount: number = 0;
 
 if (entry.direction === 'IN') {

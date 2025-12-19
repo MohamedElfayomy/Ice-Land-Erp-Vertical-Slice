@@ -1,6 +1,5 @@
 import express from 'express';
 import { LedgerReport, ViewPLStatement, getMasterLedger, ViewBalanceSheet} from '../ReportingServices';
-import { report } from 'process';
 
 const router = express.Router();
 router.get('/ledger-report', async (req, res) => {
