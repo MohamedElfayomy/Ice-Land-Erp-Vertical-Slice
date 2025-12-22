@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetAccountsForReport = exports.calculateEndBalance = exports.GetBalanceSum = exports._getJournalPrimaryAccountId = exports.getNormalBalanceCode = void 0;
+exports.findIdFromName = exports.GetAccountsForReport = exports.calculateEndBalance = exports.GetBalanceSum = exports._getJournalPrimaryAccountId = exports.getNormalBalanceCode = void 0;
 const init_models_1 = require("./models/init-models");
 const sequelize_1 = __importDefault(require("./config/sequelize"));
 async function getNormalBalanceCode(accountId) {
@@ -83,3 +83,14 @@ async function GetAccountsForReport(typeid) {
     return rows;
 }
 exports.GetAccountsForReport = GetAccountsForReport;
+async function findIdFromName(name, model) {
+    const idName = await model.findOne({
+        where: { name },
+        attributes: ['id'],
+    });
+    if (!idName) {
+        throw new Error('Name was not found!');
+    }
+    return idName.id;
+}
+exports.findIdFromName = findIdFromName;

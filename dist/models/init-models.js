@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JournalEntry = exports.SingleEntry = exports.CoaType = exports.Journals = exports.Account = void 0;
+exports.JournalAccounts = exports.JournalEntry = exports.SingleEntry = exports.CoaType = exports.Journals = exports.Account = void 0;
 const sequelize_1 = require("sequelize");
 const sequelize_2 = __importDefault(require("../config/sequelize"));
 class CoaType extends sequelize_1.Model {
@@ -155,6 +155,7 @@ JournalEntry.init({
 });
 class JournalAccounts extends sequelize_1.Model {
 }
+exports.JournalAccounts = JournalAccounts;
 JournalAccounts.init({
     journal_id: {
         type: sequelize_1.DataTypes.INTEGER,

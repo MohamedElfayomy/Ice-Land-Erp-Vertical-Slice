@@ -1,5 +1,5 @@
 import express from "express";
-import { processSingleEntry } from "../TransactionService";
+import {processSingleEntry} from "../TransactionService";
 
 const router = express.Router();
 router.post('/transactions', async (req, res) => {

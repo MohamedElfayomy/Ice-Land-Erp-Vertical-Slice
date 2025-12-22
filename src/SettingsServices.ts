@@ -1,7 +1,6 @@
 import {Transaction} from "sequelize";
 import sequelize from "./config/sequelize";
 import {Account, Journals, JournalAccounts} from "./models/init-models"
-import  "/HelperFunctions";
 import {findIdFromName} from "./HelperFunctions";
 
 interface Accounts {
@@ -10,7 +9,7 @@ interface Accounts {
     account_type: number;
 }
 
-interface AccountsInput {
+export interface AccountsInput {
     journal_ids: number[];
     account: Accounts;
 }
@@ -27,7 +26,7 @@ async function CreateAccounts(inputs: AccountsInput[]): Promise<Account[]> {
 
             const newAccount = await Account.create(
                 {
-                    number: account.account_number,
+                    account_number: account.account_number,
                     name: account.account_name,
                     type_id: account.account_type
                 },
@@ -69,29 +68,34 @@ async function getAccountsWithJournal(): Promise<AccountsWithJournals[]>{
     });
     return accounts.map((account) => ({
         account_name: account.name,
-        account_number: account.number,
+        account_number: account.account_number,
         linked_journals: account.AttachedJournals || [],
     }));
 }
 
-interface AccountWithJournalInput {
+export interface AccountWithJournalInput {
     accountId: number;
     newJournalNames: string[];
 }
 
-async function setAccountWithJournal(inputs: AccountWithJournalInput[]){
-   let id: number;
+// src/SettingsServices.ts (82-97)
+
+async function setAccountWithJournal(inputs: AccountWithJournalInput[]) {
+    let id: number;
 
     await sequelize.transaction(async (t: Transaction) => {
+        // Loop through each input in the inputs array
         for (const input of inputs) {
             for (const name of input.newJournalNames) {
+                // Find the ID corresponding to the journal name
                 id = await findIdFromName(name, Journals);
-            }
 
-            await JournalAccounts.create({
-                journal_id: id,
-                account_id: input.accountId,
-            }, {transaction: t, ignoreDuplicates: true});
+                // Create a new JournalAccounts record with the found journal_id and the provided account_id
+                await JournalAccounts.create({
+                    journal_id: id,
+                    account_id: input.accountId,
+                }, { transaction: t, ignoreDuplicates: true });
+            }
         }
     });
 }

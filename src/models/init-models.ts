@@ -33,7 +33,7 @@ CoaType.init({
 class Account extends Model<InferAttributes<Account>, InferCreationAttributes<Account>> {
   declare id: CreationOptional<number>;
   declare name: string;
-  declare number: number;
+  declare account_number: number;
   declare type_id: number;
 
   declare Type?: CoaType; // Association
@@ -51,7 +51,7 @@ Account.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
-  number: {
+  account_number: {
     type: DataTypes.INTEGER,
     allowNull: false, 
   },

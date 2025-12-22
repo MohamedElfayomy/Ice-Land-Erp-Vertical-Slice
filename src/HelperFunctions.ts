@@ -85,11 +85,11 @@ export async function calculateEndBalance(accountId: number): Promise<BalancesTa
 export async function GetAccountsForReport(typeid: number): Promise< {
   account_number:number;
   account_name: string;
-  account_balance: number; 
+  account_balance: number;
 }[]> {
 
    const accounts =  await Account.findAll({
-        where: {type_id: typeid,},
+        whre: {type_id: typeeid,},
         attributes: ['id', 'account_number', 'name'],
         order: [['account_number', 'ASC']],
     });
@@ -99,7 +99,7 @@ export async function GetAccountsForReport(typeid: number): Promise< {
             const balances = await calculateEndBalance(account.id);
 
             return {
-                account_number: account.number,
+                account_number: account.account_number,
                 account_name: account.name,
                 account_balance: balances.endingBalance,
             };
@@ -110,12 +110,14 @@ export async function GetAccountsForReport(typeid: number): Promise< {
 }
 
 export async function findIdFromName(name: string, model: any): Promise<number> {
-    const idName:number = await model.findOne({
-        where: {name},
+    const idName = await model.findOne({
+        where: { name },
         attributes: ['id'],
     });
 
-    if (!idName) {throw new Error('Name was not found!');}
+    if (!idName) {
+        throw new Error('Name was not found!');
+    }
 
-    return idName;
+    return idName.id;
 }
