@@ -37,7 +37,7 @@ async function CreateAccounts(inputs) {
 exports.CreateAccounts = CreateAccounts;
 async function getAccountsWithJournal() {
     const accounts = await init_models_1.Account.findAll({
-        attributes: ['name', 'number'],
+        attributes: ['name', 'account_number'],
         include: [
             {
                 model: init_models_1.Journals,
@@ -46,7 +46,7 @@ async function getAccountsWithJournal() {
                 through: { attributes: [] }
             },
         ],
-        order: ['number', 'ASC'],
+        order: ['account_number'],
     });
     return accounts.map((account) => ({
         account_name: account.name,
@@ -57,20 +57,33 @@ async function getAccountsWithJournal() {
 exports.getAccountsWithJournal = getAccountsWithJournal;
 // src/SettingsServices.ts (82-97)
 async function setAccountWithJournal(inputs) {
-    let id;
-    await sequelize_1.default.transaction(async (t) => {
-        // Loop through each input in the inputs array
-        for (const input of inputs) {
-            for (const name of input.newJournalNames) {
-                // Find the ID corresponding to the journal name
-                id = await (0, HelperFunctions_1.findIdFromName)(name, init_models_1.Journals);
-                // Create a new JournalAccounts record with the found journal_id and the provided account_id
-                await init_models_1.JournalAccounts.create({
-                    journal_id: id,
-                    account_id: input.accountId,
-                }, { transaction: t, ignoreDuplicates: true });
-            }
+    console.log('Setting accounts with journals...');
+    console.log('Inputs:', inputs);
+    if (!Array.isArray(inputs)) {
+        throw new Error("Invalid input format. 'inputs' must be an array.");
+    }
+    for (const input of inputs) {
+        console.log(`Processing account: ${input.accountName}`);
+        const accountID = await (0, HelperFunctions_1.findIdFromName)(input.accountName, init_models_1.Account);
+        if (!accountID) {
+            throw new Error(`Account with name "${input.accountName}" not found.`);
         }
-    });
+        console.log(`Found account ID: ${accountID}`);
+        for (const name of input.newJournalNames) {
+            console.log(`Processing journal: ${name}`);
+            const journalID = await (0, HelperFunctions_1.findIdFromName)(name, init_models_1.Journals);
+            if (!journalID) {
+                throw new Error(`Journal with name "${name}" not found.`);
+            }
+            console.log(`Found journal ID: ${journalID}`);
+            await sequelize_1.default.transaction(async (t) => {
+                await init_models_1.JournalAccounts.create({
+                    journal_id: journalID,
+                    account_id: accountID,
+                }, { transaction: t, ignoreDuplicates: true });
+            });
+            console.log(`Created entry for account ${input.accountName} with journal ${name}`);
+        }
+    }
 }
 exports.setAccountWithJournal = setAccountWithJournal;

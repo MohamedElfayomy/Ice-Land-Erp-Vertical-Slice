@@ -1,6 +1,6 @@
 import {Transaction} from "sequelize";
-import sequelize from "./config/sequelize";
-import {Account, Journals, JournalAccounts} from "./models/init-models"
+import sequelize from "../config/sequelize";
+import {Account, Journals, JournalAccounts} from "../models/init-models"
 import {findIdFromName} from "./HelperFunctions";
 
 interface Accounts {
@@ -55,7 +55,7 @@ interface AccountsWithJournals {
 async function getAccountsWithJournal(): Promise<AccountsWithJournals[]>{
 
     const accounts = await Account.findAll({
-        attributes: [ 'name', 'number' ],
+        attributes: [ 'name', 'account_number' ],
         include: [
             {
                 model: Journals,
@@ -64,7 +64,7 @@ async function getAccountsWithJournal(): Promise<AccountsWithJournals[]>{
                 through: {attributes:[]}
              },
         ],
-        order: ['number', 'ASC'],
+        order: ['account_number'],
     });
     return accounts.map((account) => ({
         account_name: account.name,
@@ -74,30 +74,48 @@ async function getAccountsWithJournal(): Promise<AccountsWithJournals[]>{
 }
 
 export interface AccountWithJournalInput {
-    accountId: number;
+    accountName: string;
     newJournalNames: string[];
 }
 
 // src/SettingsServices.ts (82-97)
 
+
 async function setAccountWithJournal(inputs: AccountWithJournalInput[]) {
-    let id: number;
 
-    await sequelize.transaction(async (t: Transaction) => {
-        // Loop through each input in the inputs array
-        for (const input of inputs) {
-            for (const name of input.newJournalNames) {
-                // Find the ID corresponding to the journal name
-                id = await findIdFromName(name, Journals);
+    console.log('Setting accounts with journals...');
+    console.log('Inputs:', inputs);
 
-                // Create a new JournalAccounts record with the found journal_id and the provided account_id
-                await JournalAccounts.create({
-                    journal_id: id,
-                    account_id: input.accountId,
-                }, { transaction: t, ignoreDuplicates: true });
-            }
+    if (!Array.isArray(inputs)) {
+        throw new Error("Invalid input format. 'inputs' must be an array.");
+    }
+
+    for (const input of inputs) {
+        console.log(`Processing account: ${input.accountName}`);
+        
+        const accountID = await findIdFromName(input.accountName, Account);
+        if (!accountID) {
+            throw new Error(`Account with name "${input.accountName}" not found.`);
         }
-    });
+        console.log(`Found account ID: ${accountID}`);
+
+        for (const name of input.newJournalNames) {
+            console.log(`Processing journal: ${name}`);
+            const journalID = await findIdFromName(name, Journals);
+            if (!journalID) {
+                throw new Error(`Journal with name "${name}" not found.`);
+            }
+            console.log(`Found journal ID: ${journalID}`);
+
+            await sequelize.transaction(async (t: Transaction) => {
+                await JournalAccounts.create({
+                    journal_id: journalID,
+                    account_id: accountID,
+                }, { transaction: t, ignoreDuplicates: true });
+            });
+            console.log(`Created entry for account ${input.accountName} with journal ${name}`);
+        }
+    }
 }
 
 export {

@@ -1,5 +1,5 @@
-import {Account, CoaType, JournalEntry, Journals} from './models/init-models';
-import sequelize from './config/sequelize';
+import {Account, CoaType, JournalEntry, Journals} from '../models/init-models';
+import sequelize from '../config/sequelize';
 
 export async function getNormalBalanceCode(accountId: number): Promise<string> {
   const account = await Account.findByPk(accountId, {
@@ -82,20 +82,19 @@ export async function calculateEndBalance(accountId: number): Promise<BalancesTa
   }
 }
 
-export async function GetAccountsForReport(typeid: number): Promise< {
-  account_number:number;
+export async function GetAccountsForReport(typeid: number): Promise<{
+  account_number: number;
   account_name: string;
   account_balance: number;
 }[]> {
-
-   const accounts =  await Account.findAll({
-        whre: {type_id: typeeid,},
-        attributes: ['id', 'account_number', 'name'],
+  const accounts = await Account.findAll({
+    where: { type_id: typeid },
+        attributes: ['account_number', 'name'],
         order: [['account_number', 'ASC']],
     });
 
     const rows = await Promise.all(
-        accounts.map(async(account) => {
+    accounts.map(async (account) => {
             const balances = await calculateEndBalance(account.id);
 
             return {
@@ -116,8 +115,24 @@ export async function findIdFromName(name: string, model: any): Promise<number> 
     });
 
     if (!idName) {
-        throw new Error('Name was not found!');
+    throw new Error('Name was not found!');
     }
 
     return idName.id;
 }
+
+
+export async function findJournalIdByName(name: string): Promise<number> {
+  const journal = await Journals.findOne({
+    where: { name },
+    attributes: ['id'],
+  });
+
+  if (!journal) {
+    throw new Error('Journal not found!');
+  }
+
+  return journal.id;
+}
+
+

@@ -1,4 +1,4 @@
-import { Account, SingleEntry, JournalEntry } from "./models/init-models";
+import { Account, SingleEntry, JournalEntry } from "../models/init-models";
 import { _getJournalPrimaryAccountId, getNormalBalanceCode, calculateEndBalance, GetAccountsForReport } from "./HelperFunctions";
 
 interface LedgerInput {

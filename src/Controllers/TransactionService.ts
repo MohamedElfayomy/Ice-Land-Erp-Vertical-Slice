@@ -1,5 +1,5 @@
-import sequelize from './config/sequelize';
-import { SingleEntry, JournalEntry, Journals, Account, JournalAccounts } from './models/init-models' // Adjust the import path as necessary
+import sequelize from '../config/sequelize';
+import { SingleEntry, JournalEntry, Journals, Account, JournalAccounts } from '../models/init-models' // Adjust the import path as necessary
 import { Op, Transaction } from 'sequelize';
 import { getNormalBalanceCode, calculateEndBalance, GetAccountsForReport, findIdFromName } from './HelperFunctions' // Adjust the import path as necessary
 

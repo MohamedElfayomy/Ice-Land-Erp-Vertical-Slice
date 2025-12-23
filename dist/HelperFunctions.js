@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findIdFromName = exports.GetAccountsForReport = exports.calculateEndBalance = exports.GetBalanceSum = exports._getJournalPrimaryAccountId = exports.getNormalBalanceCode = void 0;
+exports.findJournalIdByName = exports.findIdFromName = exports.GetAccountsForReport = exports.calculateEndBalance = exports.GetBalanceSum = exports._getJournalPrimaryAccountId = exports.getNormalBalanceCode = void 0;
 const init_models_1 = require("./models/init-models");
 const sequelize_1 = __importDefault(require("./config/sequelize"));
 async function getNormalBalanceCode(accountId) {
@@ -68,8 +68,8 @@ async function calculateEndBalance(accountId) {
 exports.calculateEndBalance = calculateEndBalance;
 async function GetAccountsForReport(typeid) {
     const accounts = await init_models_1.Account.findAll({
-        where: { type_id: typeid, },
-        attributes: ['id', 'account_number', 'name'],
+        where: { type_id: typeid },
+        attributes: ['account_number', 'name'],
         order: [['account_number', 'ASC']],
     });
     const rows = await Promise.all(accounts.map(async (account) => {
@@ -94,3 +94,14 @@ async function findIdFromName(name, model) {
     return idName.id;
 }
 exports.findIdFromName = findIdFromName;
+async function findJournalIdByName(name) {
+    const journal = await init_models_1.Journals.findOne({
+        where: { name },
+        attributes: ['id'],
+    });
+    if (!journal) {
+        throw new Error('Journal not found!');
+    }
+    return journal.id;
+}
+exports.findJournalIdByName = findJournalIdByName;

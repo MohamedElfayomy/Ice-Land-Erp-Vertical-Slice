@@ -1,9 +1,6 @@
 // src/index.ts (Corrected Structure)
 
-import express from 'express';
-import * as TransactionService from './TransactionService'; 
 import { testConnection } from './config/sequelize'; // <-- Import the connection check
-import transactionRoutes from './routes/TransactionRoutes';
 import app from './routes/app';
 
 const port = process.env.PORT || 3000; // Default port if not specified

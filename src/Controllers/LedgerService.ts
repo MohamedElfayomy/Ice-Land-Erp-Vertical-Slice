@@ -1,4 +1,4 @@
-import { JournalEntry } from "./models/init-models";
+import { JournalEntry } from "../models/init-models";
 import { fn, col } from "sequelize";
 import { getNormalBalanceCode } from "./HelperFunctions";
 

@@ -28,14 +28,18 @@ router.get('/accounts-with-journal', async (req, res) => {
         return res.status(500).json({ error: 'failed to get accounts!', details: error.message });
     }
 });
-// POST /api/settings/set-account-with-journal - Set Account with Journal
 router.post('/set-account-with-journal', async (req, res) => {
     try {
+        console.log('Request Body:', req.body); // Debugging statement
         const inputs = req.body.inputs;
+        if (!Array.isArray(inputs)) {
+            throw new Error("Invalid input format. 'inputs' must be an array.");
+        }
         await (0, SettingsServices_1.setAccountWithJournal)(inputs);
         return res.status(204).json(inputs); // No Content
     }
     catch (error) {
+        console.error('Error in /set-account-with-journal:', error.message);
         return res.status(500).json({ error: 'failed to enter accounts!', details: error.message });
     }
 });

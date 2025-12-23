@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { CreateAccounts, getAccountsWithJournal, setAccountWithJournal, AccountsInput, AccountWithJournalInput} from '../SettingsServices';
+import { CreateAccounts, getAccountsWithJournal, setAccountWithJournal, AccountsInput, AccountWithJournalInput} from '../Controllers/SettingsServices';
 
 const router = express.Router();
 
@@ -25,15 +25,22 @@ router.get('/accounts-with-journal', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/settings/set-account-with-journal - Set Account with Journal
 router.post('/set-account-with-journal', async (req: Request, res: Response) => {
     try {
+        console.log('Request Body:', req.body); // Debugging statement
         const inputs = req.body.inputs as AccountWithJournalInput[];
+        
+        if (!Array.isArray(inputs)) {
+            throw new Error("Invalid input format. 'inputs' must be an array.");
+        }
+        
         await setAccountWithJournal(inputs);
         return res.status(204).json(inputs); // No Content
     } catch (error: any) {
-        return res.status(500).json({error: 'failed to enter accounts!', details: error.message});
+        console.error('Error in /set-account-with-journal:', error.message);
+        return res.status(500).json({ error: 'failed to enter accounts!', details: error.message });
     }
 });
+
 
 export default router;
