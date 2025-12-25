@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const ReportingServices_1 = require("../ReportingServices");
+const ReportingServices_1 = require("../Controllers/ReportingServices");
 const router = express_1.default.Router();
 router.get('/ledger-report', async (req, res) => {
     try {

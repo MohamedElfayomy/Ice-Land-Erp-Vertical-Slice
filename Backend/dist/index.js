@@ -1,9 +1,9 @@
 "use strict";
-// src/index.ts (Corrected Structure)
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// src/index.ts (Corrected Structure)
 const sequelize_1 = require("./config/sequelize"); // <-- Import the connection check
 const app_1 = __importDefault(require("./routes/app"));
 const port = process.env.PORT || 3000; // Default port if not specified

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testConnection = void 0;
+exports.testConnection = testConnection;
 const sequelize_1 = require("sequelize");
 const DB_NAME = "iceland_financial_db";
 const DB_USER = "postgres";
@@ -23,5 +23,4 @@ async function testConnection() {
         throw error;
     }
 }
-exports.testConnection = testConnection;
 exports.default = sequelize;

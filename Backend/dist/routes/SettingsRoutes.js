@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const SettingsServices_1 = require("../SettingsServices");
+const SettingsServices_1 = require("../Controllers/SettingsServices");
 const router = express_1.default.Router();
 // POST /api/settings/accounts - Create Accounts
 router.post('/accounts', async (req, res) => {

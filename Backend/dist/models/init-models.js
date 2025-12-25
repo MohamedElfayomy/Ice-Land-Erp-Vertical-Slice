@@ -202,7 +202,7 @@ Account.belongsToMany(Journals, {
     through: JournalAccounts,
     foreignKey: 'account_id',
     otherKey: 'journal_id',
-    as: 'AttachedJournals',
+    as: 'AttachedJournals', // ← clear meaning
     timestamps: false,
 });
 Journals.belongsToMany(Account, {

@@ -1,10 +1,8 @@
 // src/index.ts (Corrected Structure)
-
 import { testConnection } from './config/sequelize'; // <-- Import the connection check
 import app from './routes/app';
 
 const port = process.env.PORT || 3000; // Default port if not specified
-
 
 async function startServer() {
     // 1. AUTHENTICATE DATABASE FIRST
