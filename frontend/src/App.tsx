@@ -1,7 +1,6 @@
 import Header from "./components/Header";
 import StatCard from "./components/StatCard";
 import JournalTable from "./components/JournalTable";
-import ExpenseBreakdown from "./components/ExpenseBreakdown.tsx";
 
 function App() {
     return (
