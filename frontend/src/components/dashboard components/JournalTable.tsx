@@ -1,7 +1,9 @@
+//import CurrencyFormatter from "./CurrencyFormatter.tsx";
+
 const transactions = [
-    { id: 'TX-9021', date: 'Dec 24, 2025', desc: 'Inventory Restock - Ice Cream', category: 'Supplies', amount: '-$1,200.00', status: 'Completed' },
-    { id: 'TX-9022', date: 'Dec 25, 2025', desc: 'Daily Sales - Branch A', category: 'Revenue', amount: '+$4,550.00', status: 'Processing' },
-    { id: 'TX-9023', date: 'Dec 26, 2025', desc: 'Electricity Bill - Q4', category: 'Utilities', amount: '-$850.00', status: 'Completed' },
+    { id: 'TX-9021', date: 'Dec 24, 2025', desc: 'Inventory Restock - Ice Cream', category: 'Supplies', amount: '-1,200.00', status: 'Completed' },
+    { id: 'TX-9022', date: 'Dec 25, 2025', desc: 'Daily Sales - Branch A', category: 'Revenue', amount: '+4,550.00', status: 'Processing' },
+    { id: 'TX-9023', date: 'Dec 26, 2025', desc: 'Electricity Bill - Q4', category: 'Utilities', amount: '-850.00', status: 'Completed' },
 ];
 
 export default function JournalTable() {

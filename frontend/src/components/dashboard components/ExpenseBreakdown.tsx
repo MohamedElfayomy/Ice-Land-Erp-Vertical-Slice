@@ -7,7 +7,7 @@ const ExpenseBreakdown = () => {
                 <div className="space-y-1">
                     <div className="flex justify-between text-sm">
                         <span className="font-medium text-slate-700 dark:text-slate-200">Operations &amp; Rent</span>
-                        <span className="text-slate-500 dark:text-slate-400">$1,800 (52%)</span>
+                        <span className="text-slate-500 dark:text-slate-400">EGP 1,800 (52%)</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                         <div className="bg-indigo-500 h-2 rounded-full" style={{width: "52%"}}></div>
@@ -16,7 +16,7 @@ const ExpenseBreakdown = () => {
                 <div className="space-y-1">
                     <div className="flex justify-between text-sm">
                         <span className="font-medium text-slate-700 dark:text-slate-200">Office Supplies</span>
-                        <span className="text-slate-500 dark:text-slate-400">$850 (25%)</span>
+                        <span className="text-slate-500 dark:text-slate-400">EGP 850 (25%)</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                         <div className="bg-blue-400 h-2 rounded-full" style={{width: "25%"}}></div>
@@ -25,7 +25,7 @@ const ExpenseBreakdown = () => {
                 <div className="space-y-1">
                     <div className="flex justify-between text-sm">
                         <span className="font-medium text-slate-700 dark:text-slate-200">Travel</span>
-                        <span className="text-slate-500 dark:text-slate-400">$455 (13%)</span>
+                        <span className="text-slate-500 dark:text-slate-400">EGP 455 (13%)</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                         <div className="bg-sky-300 h-2 rounded-full" style={{width: "13%"}}></div>
@@ -35,7 +35,7 @@ const ExpenseBreakdown = () => {
                     <div className="flex justify-between text-sm">
                         <span
                             className="font-medium text-slate-700 dark:text-slate-200">Meals &amp; Entertainment</span>
-                        <span className="text-slate-500 dark:text-slate-400">$300 (10%)</span>
+                        <span className="text-slate-500 dark:text-slate-400">EGP 300 (10%)</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                         <div className="bg-teal-300 h-2 rounded-full" style={{ width: "10%" }}></div>

@@ -1,13 +1,18 @@
+import logo from '../../Images/logo.png';
+
 const Header = () => {
     return (
-        <header className="flex-none flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 z-20 shadow-sm">
+        <header className="flex-none flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-0 z-20 shadow-sm">
             <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary">
-                    <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
+                <div className="flex items-center justify-center size-20 rounded-lg bg-primary/10 text-primary">
+                    <img
+                        src={logo}
+                        alt="FLC Logo"
+                        className="object-contain"
+                    />
                 </div>
                 <div>
-                    <h2 className="text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-white">Financial Ledger Core</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Enterprise Edition</p>
+                    <h2 className="text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-white">Ice Land Ice Cream</h2>
                 </div>
             </div>
             <div className="flex items-center gap-6">
